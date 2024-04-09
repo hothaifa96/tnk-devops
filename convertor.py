@@ -134,3 +134,5 @@ cursor.close()
 connection.close()
 
 print('DONE')
+with open(sql_file, "w") as f:
+    f.write(' ')
