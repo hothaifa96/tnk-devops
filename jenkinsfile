@@ -1,0 +1,55 @@
+pipeline {
+    environment {
+        SERVER_IMAGE = 'red_proj_server:v1'
+        AWS_DEFAULT_REGION= 'eu-central-1'
+        AWS_ACCOUNT_ID ='339713109533'
+        ECR_REPO_NAME='thinking-api'
+        DOCKER_IMAGE_TAG = "${ECR_REPO_NAME}:${env.BUILD_NUMBER}"
+
+    }
+    agent any
+    stages {
+        stage('isntall dep') {
+            steps {
+                // Build steps for the server
+                script{
+                    echo 'isntall dep ...'
+                    sh "pip3 install -r requirements.txt"
+                }
+            }
+        }
+        stage('Fetch XLSX from S3') {
+            steps {
+                script {
+                    withCredentials([[
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            credentialsId: 'ecr-credentials',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                        ]]) {
+                            sh "echo AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY ${AWS_SECRET_ACCESS_KEY}"
+                            sh "python3 convertor.py"     
+                         }
+                    
+                }
+            }
+        }
+        
+        //  stage('update the cluster') {
+        //     steps {
+        //         script {
+        //                 echo 'Pushing Docker Image to ECR...'
+        //                  withCredentials([[
+        //                     $class: 'AmazonWebServicesCredentialsBinding',
+        //                     credentialsId: 'ecr-credentials',
+        //                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        //                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        //                 ]]) {
+        //                     sh "aws ecs update-service --cluster Thnking-api --service api-service-1 --force-new-deployment --region eu-central-1"
+        //                  }
+        //         }
+        //     }
+        // }
+       
+    }
+}
