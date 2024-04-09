@@ -21,16 +21,7 @@ pipeline {
         stage('Fetch XLSX from S3') {
             steps {
                 script {
-                    withCredentials([[
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: 'ecr-credentials',
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ]]) {
-                            sh "echo AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY ${AWS_SECRET_ACCESS_KEY}"
-                            sh "python3 convertor.py"     
-                         }
-                    
+                         sh "python3 convertor.py"     
                 }
             }
         }
