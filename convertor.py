@@ -21,13 +21,13 @@ s3_client = boto3.client('s3')
 s3_objects = s3_client.list_objects_v2(Bucket=s3_bucket)
 files = [obj['Key'] for obj in s3_objects['Contents'] if obj['Key'].endswith('.xlsx')]
 
-for file_name in files:
-    obj = s3_client.get_object(Bucket=s3_bucket, Key=file_name)
-    excel_data = BytesIO(obj['Body'].read())
-    df = pd.read_excel(excel_data)
+for url in files:
+    print(f'{url}')
+    df = pd.read_excel(f'{url}')
+    
     with open(f'./code.sql', 'a+') as insert_data_file:
-        insert_data_file.write('-- new file here --\n')
-
+        insert_data_file.write(f'-- new file here {url[url.rfind("/") + 1:]}--\n')
+        
         # Insert data into topics table (avoid duplicates)
         inserted_topics = set()
         for index, row in df.iterrows():
@@ -71,7 +71,7 @@ INSERT INTO questions (question_id, language_id, topic_id, c_grade_id, level, qu
 VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_id}, '{question_text}', '{explanation}', '{interesting_fact}') ON CONFLICT (question_id) DO UPDATE SET language_id = {language_id} ,topic_id= {topic_id},c_grade_id ={c_grade_id},level={level},question_text='{question_text}',explanation='{explanation}',interesting_fact='{interesting_fact}';
 """)
             try:
-
+                
                 sub_subject_id = int(str(row.iloc[1])[2:6])  # Assuming the second column (index 1) is qouestion_id
                 sub_subject_name = str(row.iloc[0])
                 question_id = str(int(row.iloc[1]))
@@ -99,7 +99,7 @@ VALUES ('{question_id}', TRUE, '{correct_answer}') ;
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
 VALUES ('{question_id}', FALSE, '{answer}')  ;
 """)
-
+    
 #     insert_data_file.write("""DELETE FROM answer_options
 # WHERE answer_option_id::text NOT IN (
 #     SELECT MIN(answer_option_id)::text
@@ -108,3 +108,29 @@ VALUES ('{question_id}', FALSE, '{answer}')  ;
 # );""")
 
     print("INSERT commands SQL file generated successfully.")
+db_params = {
+        "host": "prod-database.ctaqgooomz1t.eu-central-1.rds.amazonaws.com",
+        "port": "5432",
+        "database": "postgres",
+        "user": "postgres",
+        "password": "Pa$$w0rdTk",
+        }
+connection = psycopg2.connect(**db_params)
+cursor = connection.cursor()
+sql_file = "code.sql"
+
+# Open and read the SQL file
+with open(sql_file, "r") as f:
+    sql_commands = f.read()
+
+# Execute the SQL commands
+cursor.execute('DELETE FROM answer_options;')
+cursor.execute(sql_commands)
+
+# Commit the transaction
+connection.commit()
+
+cursor.close()
+connection.close()
+
+print('DONE')
