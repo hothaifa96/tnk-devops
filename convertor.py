@@ -84,7 +84,7 @@ VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_i
                                                          "`").strip()  # Assuming the fourth column (index 3) is right_answer
             insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', TRUE, '{correct_answer}') ;
+VALUES ('{question_id}', TRUE, '{correct_answer}')  ON CONFLICT (question_id,correct_answer,answer_text) DO NOTHING ;
 """)
 
             q_id = 4 if topic_id == 3 or topic_id ==4 else 5
@@ -97,7 +97,7 @@ VALUES ('{question_id}', TRUE, '{correct_answer}') ;
             for i, answer in enumerate(wrong_answers):
                 insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', FALSE, '{answer}')  ;
+VALUES ('{question_id}', FALSE, '{answer}')  ON CONFLICT (question_id,correct_answer,answer_text) DO NOTHING  ;
 """)
 
 #     insert_data_file.write("""DELETE FROM answer_options
@@ -124,7 +124,7 @@ with open(sql_file, "r") as f:
     sql_commands = f.read()
 
 # Execute the SQL commands
-cursor.execute('DELETE FROM answer_options;')
+# cursor.execute('DELETE FROM answer_options;')
 cursor.execute(sql_commands)
 
 # Commit the transaction
