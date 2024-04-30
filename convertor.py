@@ -68,7 +68,8 @@ for file_name in files:
 
             insert_data_file.write(f"""
 INSERT INTO questions (question_id, language_id, topic_id, c_grade_id, level, question_text, explanation, interesting_fact)
-VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_id}, '{question_text}', '{explanation}', '{interesting_fact}') ON CONFLICT (question_id) DO UPDATE SET language_id = {language_id} ,topic_id= {topic_id},c_grade_id ={c_grade_id},level={level},question_text='{question_text}',explanation='{explanation}',interesting_fact='{interesting_fact}';
+VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_id}, '{question_text}', '{explanation}', '{interesting_fact}') 
+ON CONFLICT (question_id, language_id) DO UPDATE SET language_id = {language_id} ,topic_id= {topic_id},c_grade_id ={c_grade_id},level={level},question_text='{question_text}',explanation='{explanation}',interesting_fact='{interesting_fact}';
 """)
             try:
 
