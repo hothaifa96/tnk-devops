@@ -84,7 +84,7 @@ VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_i
                                                          "`").strip()  # Assuming the fourth column (index 3) is right_answer
             insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', TRUE, '{correct_answer}')  ON CONFLICT (question_id,correct_answer,answer_text) DO NOTHING ;
+VALUES ('{question_id}', TRUE, '{correct_answer}')  ;
 """)
 
             q_id = 4 if topic_id == 3 or topic_id ==4 else 5
@@ -97,7 +97,7 @@ VALUES ('{question_id}', TRUE, '{correct_answer}')  ON CONFLICT (question_id,cor
             for i, answer in enumerate(wrong_answers):
                 insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', FALSE, '{answer}')  ON CONFLICT (question_id,correct_answer,answer_text) DO NOTHING  ;
+VALUES ('{question_id}', FALSE, '{answer}')   ;
 """)
 
 #     insert_data_file.write("""DELETE FROM answer_options
