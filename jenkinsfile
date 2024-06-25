@@ -50,9 +50,7 @@ pipeline {
                 try {
                     def buildStatus = currentBuild.currentResult
                     def buildDuration = currentBuild.durationString
-                    def stagesSummary = currentBuild.stages.collect { stage ->
-                        return "${stage.name}: ${stage.status}"
-                    }.join("\n- ")
+                    def buildCauser = currentBuild.getBuildCauses()[0]?.shortDescription ?: 'N/A'
 
                     def emailSubject = "[Jenkins] Build Notification: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${buildStatus}"
                     def emailBody = """
@@ -70,11 +68,7 @@ pipeline {
 
                         Build Summary:
                         ---------------
-                        - Started By     : ${currentBuild.getBuildCauses()[0].shortDescription}
-
-                        Pipeline Stages:
-                        -----------------
-                        - ${stagesSummary}
+                        - Started By     : ${buildCauser}
 
                         For more details, please visit the Jenkins Job Page: ${env.BUILD_URL}
 
@@ -82,8 +76,8 @@ pipeline {
                         Jenkins
                     """
 
-                    mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
-                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'jenkinshodi@gmail.com'
+                    mail bcc: '', body: emailBody, cc: '', from: 'your-email@gmail.com',
+                         replyTo: 'your-email@gmail.com', subject: emailSubject, to: 'recipient-email@gmail.com'
                 } catch (Exception e) {
                     echo "Failed to send email: ${e.message}"
                 }
