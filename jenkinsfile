@@ -44,4 +44,50 @@ pipeline {
         // }
        
     }
+     post {
+        always {
+            script {
+                try {
+                    def buildStatus = currentBuild.currentResult
+                    def buildDuration = currentBuild.durationString
+                    def stagesSummary = currentBuild.stages.collect { stage ->
+                        return "${stage.name}: ${stage.status}"
+                    }.join("\n- ")
+
+                    def emailSubject = "[Jenkins] Build Notification: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${buildStatus}"
+                    def emailBody = """
+                        Hello Team,
+
+                        This is an automated notification from Jenkins regarding the status of the job execution.
+
+                        Job Details:
+                        -------------
+                        - Job Name       : ${env.JOB_NAME}
+                        - Build Number   : ${env.BUILD_NUMBER}
+                        - Build Status   : ${buildStatus}
+                        - Build URL      : ${env.BUILD_URL}
+                        - Execution Time : ${buildDuration}
+
+                        Build Summary:
+                        ---------------
+                        - Started By     : ${currentBuild.getBuildCauses()[0].shortDescription}
+
+                        Pipeline Stages:
+                        -----------------
+                        - ${stagesSummary}
+
+                        For more details, please visit the Jenkins Job Page: ${env.BUILD_URL}
+
+                        Best regards,
+                        Jenkins
+                    """
+
+                    mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
+                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'jenkinshodi@gmail.com'
+                } catch (Exception e) {
+                    echo "Failed to send email: ${e.message}"
+                }
+            }
+        }
+    }
 }
