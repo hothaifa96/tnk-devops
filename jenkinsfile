@@ -1,7 +1,5 @@
 pipeline {
-    environment {
-
-    }
+   
     agent any
     stages {
         stage('isntall dependinces') {
