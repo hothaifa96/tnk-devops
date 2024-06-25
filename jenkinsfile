@@ -76,8 +76,8 @@ pipeline {
                         Jenkins
                     """
 
-                    mail bcc: '', body: emailBody, cc: '', from: 'your-email@gmail.com',
-                         replyTo: 'your-email@gmail.com', subject: emailSubject, to: 'recipient-email@gmail.com'
+                    mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
+                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'jenkinshodi@gmail.com'
                 } catch (Exception e) {
                     echo "Failed to send email: ${e.message}"
                 }
