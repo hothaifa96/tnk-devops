@@ -5,17 +5,6 @@ import math
 import numpy
 from io import BytesIO
 
-# files = [
-#     './s3/ידע עולם כתה ג 500 שאלות.xlsx',
-#     './s3/ידע עולם כתה ה 500 שאלות.xlsx',
-#     './s3/ידע עולם כתה ו 500 שאלות.xlsx',
-#     './s3/ידע עולם כתה ד 500 שאלות.xlsx',
-#     './s3/ארתמטיקה כתה ג.xlsx',
-#     './s3/ארתמטיקה כתה ד.xlsx',
-#     './s3/ארתמטיקה כתה ה.xlsx',
-#     './s3/ארתמטיקה כתה ו.xlsx',
-# ]
-
 s3_bucket='thinking-bucket'
 s3_client = boto3.client('s3')
 s3_objects = s3_client.list_objects_v2(Bucket=s3_bucket)
@@ -25,7 +14,7 @@ for file_name in files:
     obj = s3_client.get_object(Bucket=s3_bucket, Key=file_name)
     excel_data = BytesIO(obj['Body'].read())
     df = pd.read_excel(excel_data)
-    with open(f'./code.sql', 'a+') as insert_data_file:
+    with open(f'./c.sql', 'a+') as insert_data_file:
         insert_data_file.write('-- new file here --\n')
 
         # Insert data into topics table (avoid duplicates)
@@ -68,8 +57,7 @@ for file_name in files:
 
             insert_data_file.write(f"""
 INSERT INTO questions (question_id, language_id, topic_id, c_grade_id, level, question_text, explanation, interesting_fact)
-VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_id}, '{question_text}', '{explanation}', '{interesting_fact}') 
-ON CONFLICT (question_id, language_id) DO UPDATE SET language_id = {language_id} ,topic_id= {topic_id},c_grade_id ={c_grade_id},level={level},question_text='{question_text}',explanation='{explanation}',interesting_fact='{interesting_fact}';
+VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_id}, '{question_text}', '{explanation}', '{interesting_fact}') ON CONFLICT (question_id) DO UPDATE SET language_id = {language_id} ,topic_id= {topic_id},c_grade_id ={c_grade_id},level={level},question_text='{question_text}',explanation='{explanation}',interesting_fact='{interesting_fact}';
 """)
             try:
 
@@ -85,7 +73,7 @@ ON CONFLICT (question_id, language_id) DO UPDATE SET language_id = {language_id}
                                                          "`").strip()  # Assuming the fourth column (index 3) is right_answer
             insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', TRUE, '{correct_answer}')  ;
+VALUES ('{question_id}', TRUE, '{correct_answer}') ON CONFLICT (question_id, correct_answer, answer_text) DO NOTHING;
 """)
 
             q_id = 4 if topic_id == 3 or topic_id ==4 else 5
@@ -98,15 +86,9 @@ VALUES ('{question_id}', TRUE, '{correct_answer}')  ;
             for i, answer in enumerate(wrong_answers):
                 insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
-VALUES ('{question_id}', FALSE, '{answer}')   ;
+VALUES ('{question_id}', FALSE, '{answer}') ON CONFLICT (question_id, correct_answer, answer_text) DO NOTHING;
 """)
 
-#     insert_data_file.write("""DELETE FROM answer_options
-# WHERE answer_option_id::text NOT IN (
-#     SELECT MIN(answer_option_id)::text
-#     FROM answer_options
-#     GROUP BY question_id, answer_text
-# );""")
 
     print("INSERT commands SQL file generated successfully.")
 db_params = {
@@ -118,22 +100,23 @@ db_params = {
         }
 connection = psycopg2.connect(**db_params)
 cursor = connection.cursor()
-sql_file = "code.sql"
+sql_file = "c.sql"
 
-# Open and read the SQL file
-with open(sql_file, "r") as f:
-    sql_commands = f.read()
+# # # Open and read the SQL file
+# with open(sql_file, "r") as f:
+#     sql_commands = f.read()
 
-# Execute the SQL commands
+# # Execute the SQL commands
 # cursor.execute('DELETE FROM answer_options;')
-cursor.execute(sql_commands)
+# # cursor.execute('DELETE FROM questions;')
+# cursor.execute(sql_commands)
 
-# Commit the transaction
-connection.commit()
+# # Commit the transaction
+# connection.commit()
 
-cursor.close()
-connection.close()
+# cursor.close()
+# connection.close()
 
 print('DONE')
-with open(sql_file, "w") as f:
-    f.write(' ')
+# with open(sql_file, "w") as f:
+    # f.write(' ')

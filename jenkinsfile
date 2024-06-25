@@ -1,19 +1,14 @@
 pipeline {
     environment {
-        SERVER_IMAGE = 'red_proj_server:v1'
-        AWS_DEFAULT_REGION= 'eu-central-1'
-        AWS_ACCOUNT_ID ='339713109533'
-        ECR_REPO_NAME='thinking-api'
-        DOCKER_IMAGE_TAG = "${ECR_REPO_NAME}:${env.BUILD_NUMBER}"
 
     }
     agent any
     stages {
-        stage('isntall dep') {
+        stage('isntall dependinces') {
             steps {
                 // Build steps for the server
                 script{
-                    echo 'isntall dep ...'
+                    echo 'isntalling dependinces ...'
                     sh "pip3 install -r requirements.txt"
                 }
             }
@@ -29,7 +24,7 @@ pipeline {
                         ]]) {
                             sh "echo AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY ${AWS_SECRET_ACCESS_KEY}"
                          sh "python3 convertor.py" 
-}
+                    }
                 }
             }
         }
