@@ -44,43 +44,43 @@ pipeline {
         // }
        
     }
-     post {
-        always {
-            script {
-                try {
-                    def buildStatus = currentBuild.currentResult
-                    def buildDuration = currentBuild.durationString
-                    def buildCauser = currentBuild.getBuildCauses()[0]?.shortDescription ?: 'N/A'
+    // //  post {
+    //     always {
+    //         script {
+    //             try {
+    //                 def buildStatus = currentBuild.currentResult
+    //                 def buildDuration = currentBuild.durationString
+    //                 def buildCauser = currentBuild.getBuildCauses()[0]?.shortDescription ?: 'N/A'
 
-                    def emailSubject = "[Jenkins] Build Notification: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${buildStatus}"
-                    def emailBody = """
-                        Hello Team,
+    //                 def emailSubject = "[Jenkins] Build Notification: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' - ${buildStatus}"
+    //                 def emailBody = """
+    //                     Hello Team,
 
-                        This is an automated notification from Jenkins regarding the status of the job execution.
+    //                     This is an automated notification from Jenkins regarding the status of the job execution.
 
-                        Job Details:
-                        -------------
-                        - Job Name       : ${env.JOB_NAME}
-                        - Build Number   : ${env.BUILD_NUMBER}
-                        - Build Status   : ${buildStatus}
-                        - Execution Time : ${buildDuration}
+    //                     Job Details:
+    //                     -------------
+    //                     - Job Name       : ${env.JOB_NAME}
+    //                     - Build Number   : ${env.BUILD_NUMBER}
+    //                     - Build Status   : ${buildStatus}
+    //                     - Execution Time : ${buildDuration}
 
-                        Build Summary:
-                        ---------------
-                        - Started By     : ${buildCauser}
+    //                     Build Summary:
+    //                     ---------------
+    //                     - Started By     : ${buildCauser}
 
-                        For more details, please visit the Jenkins Job Page: ${env.BUILD_URL}
+    //                     For more details, please visit the Jenkins Job Page: ${env.BUILD_URL}
 
-                        Best regards,
-                        Jenkins
-                    """
+    //                     Best regards,
+    //                     Jenkins
+    //                 """
 
-                    mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
-                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'itayhau@gmail.com'
-                } catch (Exception e) {
-                    echo "Failed to send email: ${e.message}"
-                }
-            }
-        }
-    }
+    //                 mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
+    //                      replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'itayhau@gmail.com'
+    //             } catch (Exception e) {
+    //                 echo "Failed to send email: ${e.message}"
+    //             }
+    //         }
+    //     }
+    // }
 }

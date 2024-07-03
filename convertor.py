@@ -3,6 +3,7 @@ import psycopg2
 import boto3
 import math
 import numpy
+import requests
 from io import BytesIO
 
 # 2 files -> class 
@@ -101,16 +102,32 @@ sql_file = "c.sql"
 
 # sql execution
 
-with open(sql_file, "r") as f:
-    sql_commands = f.read()
+try:
+    with open(sql_file, "r") as f:
+        sql_commands = f.read()
 
-cursor.execute('DELETE FROM answer_options;')
-cursor.execute('DELETE FROM sub_subjects;')
-cursor.execute(sql_commands)
+    cursor.execute('DELETE FROM answer_options;')
+    cursor.execute('DELETE FROM sub_subjects;')
+    cursor.execute(sql_commands)
+    connection.commit()
+    data = {
+    'subject': 'question convertor job in jenkins',
+    'success': 'was successful',
+    'details': 'All tasks completed successfully'
+    }
+    print('data injected to the database ')
+except Exception as e:
+    print(e)
+    data = {
+    'subject': 'question convertor job in jenkins',
+    'success': 'was failed',
+    'details': f'error message : -> {e}'
+    }
+    
+finally:
+    url = 'http://ecs-lb-1105484532.eu-central-1.elb.amazonaws.com/api/sendemail'
+    response = requests.post(url, json=data)
+    print(response.status_code)
+    cursor.close()
+    connection.close()
 
-connection.commit()
-
-cursor.close()
-connection.close()
-
-print('data injected to the database ')
