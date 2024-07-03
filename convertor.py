@@ -99,18 +99,18 @@ connection = psycopg2.connect(**db_params)
 cursor = connection.cursor()
 sql_file = "c.sql"
 
-## sql execution
+# sql execution
 
-# with open(sql_file, "r") as f:
-#     sql_commands = f.read()
+with open(sql_file, "r") as f:
+    sql_commands = f.read()
 
-# cursor.execute('DELETE FROM answer_options;')
-# cursor.execute('DELETE FROM sub_subjects;')
-# cursor.execute(sql_commands)
+cursor.execute('DELETE FROM answer_options;')
+cursor.execute('DELETE FROM sub_subjects;')
+cursor.execute(sql_commands)
 
-# connection.commit()
+connection.commit()
 
-# cursor.close()
-# connection.close()
+cursor.close()
+connection.close()
 
 print('data injected to the database ')
