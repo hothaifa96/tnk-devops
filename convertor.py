@@ -17,14 +17,12 @@ for file_name in files:
     with open(f'./c.sql', 'a+') as insert_data_file:
         insert_data_file.write('-- new file here --\n')
 
-        # Insert data into topics table (avoid duplicates)
         inserted_topics = set()
         for index, row in df.iterrows():
             if not pd.notna(row.iloc[1]):
                 continue
-            # if()
             try:
-                topic_id = int(str(row.iloc[1])[0])  # Assuming the second column (index 1) is qouestion_id
+                topic_id = int(str(row.iloc[1])[0]) 
                 if topic_id not in inserted_topics:
                     topic_name = 'math' if topic_id == 1 else 'common knowlage' if  topic_id == 3 else 'english'
                     insert_data_file.write(
@@ -33,16 +31,15 @@ for file_name in files:
             except Exception as e:
                 print(e)
 
-        # Insert data into questions and answer_options tables
         for index, row in df.iterrows():
             if not pd.notna(row.iloc[1]):
                 continue
-            question_id = str(int(row.iloc[1]))  # Assuming the second column (index 1) is qouestion_id
+            question_id = str(int(row.iloc[1]))  
             language_id = 1
-            sub_subject_id = int(str(row.iloc[1])[3:6])  # Assuming the second column (index 1) is qouestion_id
+            sub_subject_id = int(str(row.iloc[1])[3:6])  
             sub_subject_name = str(row.iloc[0])
             topic_id = int(str(row.iloc[1])[0])
-            c_grade_id = int(question_id[2])  # Set c_grade_id to the last digit of qouestion_id
+            c_grade_id = int(question_id[2])  
             level = int(question_id[-1])
 
             q_top = 2 if topic_id == 3 or topic_id == 4 else 3
@@ -61,7 +58,7 @@ VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_i
 """)
             try:
 
-                sub_subject_id = int(str(row.iloc[1])[2:6])  # Assuming the second column (index 1) is qouestion_id
+                sub_subject_id = int(str(row.iloc[1])[2:6])  
                 sub_subject_name = str(row.iloc[0])
                 question_id = str(int(row.iloc[1]))
                 insert_data_file.write(
@@ -70,7 +67,7 @@ VALUES ('{question_id}', {language_id}, {topic_id}, {c_grade_id}, {sub_subject_i
                 print(e)
             q_id = 3 if topic_id == 3 or topic_id ==4  else 4
             correct_answer = str(row.iloc[q_id]).replace("'",
-                                                         "`").strip()  # Assuming the fourth column (index 3) is right_answer
+                                                         "`").strip()  
             insert_data_file.write(f"""
 INSERT INTO answer_options (question_id, correct_answer, answer_text)
 VALUES ('{question_id}', TRUE, '{correct_answer}') ON CONFLICT (question_id, correct_answer, answer_text) DO NOTHING;
@@ -102,21 +99,18 @@ connection = psycopg2.connect(**db_params)
 cursor = connection.cursor()
 sql_file = "c.sql"
 
-# # # Open and read the SQL file
-# with open(sql_file, "r") as f:
-#     sql_commands = f.read()
+## sql execution
 
-# # Execute the SQL commands
-# cursor.execute('DELETE FROM answer_options;')
-# # cursor.execute('DELETE FROM questions;')
-# cursor.execute(sql_commands)
+with open(sql_file, "r") as f:
+    sql_commands = f.read()
 
-# # Commit the transaction
-# connection.commit()
+cursor.execute('DELETE FROM answer_options;')
+cursor.execute('DELETE FROM sub_subjects;')
+cursor.execute(sql_commands)
 
-# cursor.close()
-# connection.close()
+connection.commit()
 
-print('DONE')
-# with open(sql_file, "w") as f:
-    # f.write(' ')
+cursor.close()
+connection.close()
+
+print('data injected to the database ')
