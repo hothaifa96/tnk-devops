@@ -5,7 +5,8 @@ import math
 import numpy
 from io import BytesIO
 
-s3_bucket='thinking-bucket'
+# 2 files -> class 
+s3_bucket='thinking-bucket' 
 s3_client = boto3.client('s3')
 s3_objects = s3_client.list_objects_v2(Bucket=s3_bucket)
 files = [obj['Key'] for obj in s3_objects['Contents'] if obj['Key'].endswith('.xlsx')]
@@ -16,7 +17,6 @@ for file_name in files:
     df = pd.read_excel(excel_data)
     with open(f'./c.sql', 'a+') as insert_data_file:
         insert_data_file.write('-- new file here --\n')
-
         inserted_topics = set()
         for index, row in df.iterrows():
             if not pd.notna(row.iloc[1]):
@@ -101,16 +101,16 @@ sql_file = "c.sql"
 
 ## sql execution
 
-with open(sql_file, "r") as f:
-    sql_commands = f.read()
+# with open(sql_file, "r") as f:
+#     sql_commands = f.read()
 
-cursor.execute('DELETE FROM answer_options;')
-cursor.execute('DELETE FROM sub_subjects;')
-cursor.execute(sql_commands)
+# cursor.execute('DELETE FROM answer_options;')
+# cursor.execute('DELETE FROM sub_subjects;')
+# cursor.execute(sql_commands)
 
-connection.commit()
+# connection.commit()
 
-cursor.close()
-connection.close()
+# cursor.close()
+# connection.close()
 
 print('data injected to the database ')

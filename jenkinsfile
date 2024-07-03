@@ -63,7 +63,6 @@ pipeline {
                         - Job Name       : ${env.JOB_NAME}
                         - Build Number   : ${env.BUILD_NUMBER}
                         - Build Status   : ${buildStatus}
-                        - Build URL      : ${env.BUILD_URL}
                         - Execution Time : ${buildDuration}
 
                         Build Summary:
@@ -77,7 +76,7 @@ pipeline {
                     """
 
                     mail bcc: '', body: emailBody, cc: '', from: 'jenkinshodi@gmail.com',
-                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'gseliran@gmail.com'
+                         replyTo: 'jenkinshodi@gmail.com', subject: emailSubject, to: 'itayhau@gmail.com'
                 } catch (Exception e) {
                     echo "Failed to send email: ${e.message}"
                 }
