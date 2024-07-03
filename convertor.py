@@ -124,10 +124,10 @@ except Exception as e:
     data = {
     'subject': 'question convertor job in jenkins',
     'success': 'was failed',
-    'details': f'error message : -> {str(e)}'
+    'details': f'error message : -> {e}'
     }
     raise Exception(e)
-    url = 'http://localhost:80/api/sendemail'
+    url = 'http://ecs-lb-1105484532.eu-central-1.elb.amazonaws.com/api/sendemail'
     response = requests.post(url, json=data)
     print(response.status_code)
 finally:
