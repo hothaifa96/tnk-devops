@@ -116,18 +116,22 @@ try:
     'details': 'All tasks completed successfully'
     }
     print('data injected to the database ')
+    url = 'http://localhost:80/api/sendemail'
+    response = requests.post(url, json=data)
+    print(response.status_code)
 except Exception as e:
     print(e)
     data = {
     'subject': 'question convertor job in jenkins',
     'success': 'was failed',
-    'details': f'error message : -> {e}'
+    'details': f'error message : -> {str(e)}'
     }
     raise Exception(e)
-finally:
-    url = 'http://ecs-lb-1105484532.eu-central-1.elb.amazonaws.com/api/sendemail'
+    url = 'http://localhost:80/api/sendemail'
     response = requests.post(url, json=data)
     print(response.status_code)
+finally:
+    
     cursor.close()
     connection.close()
 
