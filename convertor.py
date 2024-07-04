@@ -110,7 +110,7 @@ sql_file = "c.sql"
 # sql execution
 now = datetime.now()
 current_date = now.strftime("%Y-%m-%d")
-current_hour = now.strftime("%H")+3
+current_hour = now.strftime("%H")+'3'
 
 try:
     with open(sql_file, "r") as f:
