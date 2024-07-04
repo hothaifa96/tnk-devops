@@ -5,6 +5,7 @@ import math
 import numpy
 import requests
 from io import BytesIO
+from datetime import datetime
 
 # 2 files -> class 
 s3_bucket='thinking-bucket' 
@@ -101,6 +102,9 @@ cursor = connection.cursor()
 sql_file = "c.sql"
 
 # sql execution
+now = datetime.now()
+current_date = now.strftime("%Y-%m-%d")
+current_hour = now.strftime("%H")
 
 try:
     with open(sql_file, "r") as f:
@@ -111,7 +115,7 @@ try:
     cursor.execute(sql_commands)
     connection.commit()
     data = {
-    'subject': 'question convertor job in jenkins',
+    'subject': f'Jenkins convert questions job - {current_date} at {current_hour}:00',
     'success': 'was successful',
     'details': 'All tasks completed successfully'
     }
@@ -122,7 +126,7 @@ try:
 except Exception as e:
     print(e)
     data = {
-    'subject': 'question convertor job in jenkins',
+    'subject': f'Jenkins convert questions job - {current_date} at {current_hour}:00',
     'success': 'was failed',
     'details': f'error message : -> {e}'
     }
