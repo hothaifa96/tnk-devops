@@ -126,7 +126,7 @@ try:
     'details': 'All tasks completed successfully'
     }
     print('data injected to the database ')
-    url = 'http://localhost:80/api/sendemail'
+    url = 'http://ecs-lb-1105484532.eu-central-1.elb.amazonaws.com/api/sendemail'
     response = requests.post(url, json=data)
     print(response.status_code)
 except Exception as e:
