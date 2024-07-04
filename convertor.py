@@ -6,12 +6,18 @@ import numpy
 import requests
 from io import BytesIO
 from datetime import datetime
+import subprocess
 
 # 2 files -> class 
 s3_bucket='thinking-bucket' 
 s3_client = boto3.client('s3')
 s3_objects = s3_client.list_objects_v2(Bucket=s3_bucket)
 files = [obj['Key'] for obj in s3_objects['Contents'] if obj['Key'].endswith('.xlsx')]
+command = 'rm -fr ./c.sql'
+result = subprocess.run(command, shell=True, capture_output=True, text=True)
+print(f"Return code: {result.returncode}")
+print(f"stdout: {result.stdout}")
+print(f"stderr: {result.stderr}")
 
 for file_name in files:
     obj = s3_client.get_object(Bucket=s3_bucket, Key=file_name)
