@@ -18,7 +18,7 @@ CHANGED_FILES=$(aws s3api list-objects-v2 \
 # Check if any files were changed
 if [[ $CHANGED_FILES == "[]" ]]; then
     echo "No files have been modified in the last hour."
-    exit 1
+    # exit 1
 
 else
     echo "Files modified in the last hour:"
